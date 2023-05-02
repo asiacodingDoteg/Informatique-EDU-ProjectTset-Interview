@@ -6,7 +6,7 @@ AS
 
 DECLARE @_CountRow int = 0; 
 DECLARE @_LastID int = 0;
-select @_CountRow = Count(*) from InformatiqueEDU_Task.dbo.Users where Username = @Username
+
 
 if (select COUNT(*) from InformatiqueEDU_Task.dbo.Users) = 0
 begin
@@ -18,6 +18,7 @@ begin
 end
 
 
+select @_CountRow = Count(*) from InformatiqueEDU_Task.dbo.Users where Username = @Username
 
 -- If the user is found, it returns -1
 if @_CountRow >= 1

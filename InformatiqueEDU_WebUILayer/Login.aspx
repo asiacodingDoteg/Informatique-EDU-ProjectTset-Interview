@@ -48,10 +48,6 @@ height: 25px;
 
             <table class="auto-style1">
 
-
-
-
-
                 <tr style="background-color: darkslateblue; color: white">
                     <td class="auto-style4">
                         <center><span>Login</span></center>

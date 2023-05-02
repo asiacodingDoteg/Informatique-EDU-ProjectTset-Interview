@@ -131,8 +131,16 @@
 
             <ul>
                 <li style="padding: 10px;"><a class="active" href="HomePage.aspx">Home</a></li>
-                <li style="padding: 10px;"><a href="TaskPage.aspx">Add Task</a></li>
-                <li style="padding: 10px;"><a href="SearchPage.aspx">Search Task</a></li>
+
+                <%
+                    if (InformatiqueEDU_WebUILayer.ExtensionMethod.CurUser(this).UserType == 1) //See Only Task to Admin
+                    {
+                        Response.Write("<li style='padding: 10px;'><a href='TaskPage.aspx'>Add Task</a></li>");
+                    }
+                %>
+                
+
+                <li style="padding: 10px;"><a href="SearchPage.aspx">Task</a></li>
 
 
                 <li style="float: right; color: white; padding: 10px">
@@ -140,6 +148,8 @@
                 </li>
             </ul>
 
+
+            <br />
 
 
 
@@ -179,8 +189,8 @@
 
 
 
-  
- 
+
+
 
 </body>
 </html>

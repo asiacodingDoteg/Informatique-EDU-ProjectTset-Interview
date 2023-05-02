@@ -10,31 +10,8 @@ namespace InformatiqueEDU_WebUILayer
 {
     public partial class HomePage : System.Web.UI.Page
     {
-        dboConnect.Users CurUser
-        {
-            get
-            {
-                if (Session["LogginUsers"] is dboConnect.Users DataUser)
-                {
-                    return DataUser;
-                }
-                else
-                {
-                    Response.Redirect("Login.aspx", false);
-
-                    return new dboConnect.Users();
-                }
-            }
-        }
-
-
-
-
         protected void Page_Load(object sender, EventArgs e)
         {
-
-
-
             if (Session["LogginUsers"] is dboConnect.Users DataUser)
             {
                 LoginUsers.InnerText = $"{DataUser.Fullname } : {(DataUser.UserType == 1 ? "Admin" : "User")}";
@@ -43,32 +20,28 @@ namespace InformatiqueEDU_WebUILayer
             {
                 Response.Redirect("Login.aspx", false);
             }
-
-
-            //DataList1.DataSource = new List<dboConnect.Task>() { new dboConnect.Task() { DateTime = DateTime.Now, TitleTask = "Frist Task", id = 1, } };
-
         }
-
-
 
         protected string SetTaskRes()
         {
-            using (var db = new dboConnect.InformatiqueEDU_TaskEntities())
+            try
             {
-                int allTask = 0;
-                int daneTask = 0;
-
-                if (CurUser.UserType > 0)
+                using (var db = new dboConnect.InformatiqueEDU_TaskEntities())
                 {
-                    return "";
-                }
+                    int allTask = 0;
+                    int daneTask = 0;
 
-                allTask = db.Task.ToList().Where(a => a.FromUser == CurUser.id).ToList().Count;
-                daneTask = db.Task.ToList().Where(a => a.TypeTask == 0 && a.ToUser == CurUser.id).ToList().Count;
+                    if (this.CurUser().UserType > 0)
+                    {
+                        return "";
+                    }
+
+                    allTask = db.Task.ToList().Where(a => a.ToUser == this.CurUser().id).ToList().Count;
+                    daneTask = db.Task.ToList().Where(a => a.TypeTask == 1 && a.ToUser == this.CurUser().id).ToList().Count;
 
 
 
-                return $@"       <div class='summary__states'>
+                    return $@"       <div class='summary__states'>
                                         <div class='summary__state' style='background-color: var(--color4Trans);'>
                                             <div class='summary__stateLabel'>
                                                 <svg class='summary__stateIcon' xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 20 20'>
@@ -77,30 +50,40 @@ namespace InformatiqueEDU_WebUILayer
                                                 <p class='summary__stateName' style='color: var(--color4);'>Task</p>
                                             </div>
                                             <div class='summary__stateDigits'>
-                                                <p class='summary__stateTDigitsValue'>{daneTask}</p>
+                                                <p class=' summary__stateTDigitsValue '>{daneTask}</p>
                                                 <p class='summary__stateDigitsTotal'>/ {allTask}</p>
                                             </div>
                                         </div>";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                this.ErorrPage(ex.Message);
+                return "";
             }
         }
 
         protected string SetUserCount()
         {
-            using (var db = new dboConnect.InformatiqueEDU_TaskEntities())
+            try
             {
-                int alluser = 0;
 
-                if (CurUser.UserType < 1)
+                using (var db = new dboConnect.InformatiqueEDU_TaskEntities())
                 {
-                    return "";
-                }
+                    int alluser = 0;
 
-                alluser = db.Users.ToList().Where(a => a.TeamLeader == CurUser.id && a.id != CurUser.id).ToList().Count;
+                    if (this.CurUser().UserType < 1)
+                    {
+                        return "";
+                    }
+
+                    alluser = db.Users.ToList().Where(a => a.TeamLeader == this.CurUser().id && a.id != this.CurUser().id).ToList().Count;
 
 
 
 
-                return $@"        
+                    return $@"        
 
 
       <div class='summary__state' style='background-color: var(--color7Trans);'>
@@ -116,12 +99,18 @@ namespace InformatiqueEDU_WebUILayer
 
 
 ";
+                }
+            }
+            catch (Exception ex)
+            {
+                this.ErorrPage(ex.Message);
+                return "";
             }
         }
 
         protected string SeeWelcomeMSG()
         {
-            return "Welcome Back " + CurUser.Fullname;
+            return "Welcome Back " + this.CurUser().Fullname;
         }
 
         protected string BasicdataAnalysis()
@@ -136,20 +125,20 @@ namespace InformatiqueEDU_WebUILayer
                 int daneTask = 0;
 
 
-                Statistxt = CurUser.UserType == 1 ?
+                Statistxt = this.CurUser().UserType == 1 ?
                     "The percentage of completed tasks required of your team is displayed" :  //See This (admin)
                     "The percentage of completed tasks that are required of you is displayed"; // ... user
 
 
-                if (CurUser.UserType == 0)
+                if (this.CurUser().UserType == 0)
                 {
-                    allTask = db.Task.ToList().Where(a => a.ToUser == CurUser.id).ToList().Count;
-                    daneTask = db.Task.ToList().Where(a => a.TypeTask == 1 && a.ToUser == CurUser.id).ToList().Count;
+                    allTask = db.Task.ToList().Where(a => a.ToUser == this.CurUser().id).ToList().Count;
+                    daneTask = db.Task.ToList().Where(a => a.TypeTask == 1 && a.ToUser == this.CurUser().id).ToList().Count;
                 }
                 else
                 {
-                    allTask = db.Task.ToList().Where(a => a.FromUser == CurUser.id).ToList().Count;
-                    daneTask = db.Task.ToList().Where(a => a.TypeTask == 1 && a.FromUser == CurUser.id).ToList().Count;
+                    allTask = db.Task.ToList().Where(a => a.FromUser == this.CurUser().id).ToList().Count;
+                    daneTask = db.Task.ToList().Where(a => a.TypeTask == 1 && a.FromUser == this.CurUser().id).ToList().Count;
                 }
 
 
@@ -166,21 +155,15 @@ namespace InformatiqueEDU_WebUILayer
                                         <p class='result__messageDetails'>{Statistxt}.</p>
                                     </div>";
             }
-
-
-
-
-
-
         }
 
 
 
         protected string CopyLinkProfiler()
         {
-            if (CurUser.UserType == 1)
+            if (this.CurUser().UserType == 1)
             {
-                string SinginLink = Request.Url.Scheme + "://" + Request.Url.Authority + "/Login?LoaderID=" + CurUser.id;
+                string SinginLink = Request.Url.Scheme + "://" + Request.Url.Authority + "/Login?LoaderID=" + this.CurUser().id;
                 return $"  <p>Invite more members to your team via this link copy <span>{SinginLink}</span> </p>";
 
             }

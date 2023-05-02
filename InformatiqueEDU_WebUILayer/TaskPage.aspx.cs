@@ -80,7 +80,7 @@ namespace InformatiqueEDU_WebUILayer
 
 
                     var subjectTask = txtSubjectTask.Value;
-                    var FileUpdae = updateFiles(DataUser.id, Convert.ToInt32(GetCurUsers1.SelectedItem.Value));
+                    var FileUpdae = updateFiles(upFileTask,DataUser.id, Convert.ToInt32(GetCurUsers1.SelectedItem.Value));
                     if (FileUpdae.Status)
                     {
                         task.FilePath = FileUpdae.AttachedObject.ToString();
@@ -109,6 +109,7 @@ namespace InformatiqueEDU_WebUILayer
             catch (Exception ex)
             {
                 //add here Page Erorr
+                this.ErorrPage(ex.Message);
             }
 
         }
@@ -116,24 +117,23 @@ namespace InformatiqueEDU_WebUILayer
 
 
 
-        ModelLayer.ServicesResponse<object> updateFiles(int userFrom, int UserTO)
+        protected ModelLayer.ServicesResponse<object> updateFiles(FileUpload FileControls, int userFrom, int UserTO)
         {
             try
             {
-                //Check is has File
-                if (!upFileTask.HasFile)
+                if (!FileControls.HasFile)
                 {
                     return new ModelLayer.ServicesResponse<object>() { Status = false, Message = "there's no file" };
                 }
 
-                string strFileName;
-                string strFilePath;
-                string strFolder;
+                string strFileName = "";
+                string strFilePath = "";
+                string strFolder = "";
 
-                strFolder = Server.MapPath($"./File/TaskFiles/{userFrom}/{UserTO}/");
+                strFolder = Server.MapPath($"./File/TaskFiles/{userFrom}/{UserTO}");
                 // Retrieve the name of the file that is posted.
 
-                strFileName = upFileTask.PostedFile.FileName;
+                strFileName = FileControls.FileName;
 
                 strFileName = Path.GetFileName(strFileName);
 
@@ -147,9 +147,9 @@ namespace InformatiqueEDU_WebUILayer
                 strFilePath = System.IO.Path.Combine(strFolder, strFileName);
 
                 // Save the uploaded file to the server.
-                upFileTask.PostedFile.SaveAs(strFilePath);
+                FileControls.SaveAs(strFilePath);
 
-                return new ModelLayer.ServicesResponse<object>() { Status = true, Message = strFileName + " has been successfully uploaded.", AttachedObject = strFileName };
+                return new ModelLayer.ServicesResponse<object>() { Status = true, Message = strFileName + " has been successfully uploaded.", AttachedObject = strFilePath };
 
             }
             catch (Exception ex)
@@ -159,10 +159,9 @@ namespace InformatiqueEDU_WebUILayer
 
         }
 
+        protected void Button1_Click(object sender, EventArgs e)
+        {
 
-
-
-
-
+        }
     }
 }

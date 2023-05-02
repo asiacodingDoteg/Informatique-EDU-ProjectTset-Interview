@@ -51,5 +51,40 @@ namespace dboConnect
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_LoginUser_Result>("sp_LoginUser", usernameParameter, passwordParameter);
         }
+    
+        public virtual ObjectResult<sp_SharchTask_Result> sp_SharchTask(Nullable<int> userID, Nullable<int> type, string keyrold)
+        {
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            var typeParameter = type.HasValue ?
+                new ObjectParameter("Type", type) :
+                new ObjectParameter("Type", typeof(int));
+    
+            var keyroldParameter = keyrold != null ?
+                new ObjectParameter("Keyrold", keyrold) :
+                new ObjectParameter("Keyrold", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_SharchTask_Result>("sp_SharchTask", userIDParameter, typeParameter, keyroldParameter);
+        }
+    
+        public virtual ObjectResult<string> sp_GetFullname(Nullable<int> userID)
+        {
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("sp_GetFullname", userIDParameter);
+        }
+    
+        public virtual ObjectResult<sp_GetUser_Result> sp_GetUser(Nullable<int> userID)
+        {
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_GetUser_Result>("sp_GetUser", userIDParameter);
+        }
     }
 }
