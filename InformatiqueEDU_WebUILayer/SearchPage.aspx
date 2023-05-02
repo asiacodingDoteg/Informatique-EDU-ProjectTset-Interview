@@ -23,10 +23,15 @@
         .auto-style3 { height: 50%; text-align: center; }
         .auto-style7 { text-align: center; }
         .auto-style9 { font-size: large; font-weight: bold; font-family: "Agency FB"; height: 20px; width: 80%; }
+        .auto-style10 { width: 100%; height: 182px; }
+
+        .txttitlestyle1 { width: 100%; height: 40px; font-size: medium }
     </style>
 
 </head>
 <body>
+
+
     <form id="form1" runat="server">
         <div>
 
@@ -46,42 +51,38 @@
             </ul>
 
 
-            <asp:ScriptManager runat="server">
-                <CompositeScript></CompositeScript>
-            </asp:ScriptManager>
-            <asp:UpdatePanel runat="server">
-                <ContentTemplate>
-                    <asp:Panel runat="server" ID="PlControlData">
-                        <div class="auto-style7" runat="server" id="Panel">
 
-                            <div style="background-color: darkslateblue; padding: 10px; border-end-start-radius: 20px; border-end-end-radius: 20px;">
-                                <input class="auto-style9" placeholder="Search for tasks" style="background-color: darkslateblue; color: white; border: solid 0px; border-block-end: solid 1px black; text-align: center;" id="txtSharch" runat="server" />
-                                <br />
-                                &nbsp;<div>
-                                    <asp:Button runat="server" Text="Sharch" OnClick="Sharch" />
-                                </div>
-                            </div>
+            <asp:Panel runat="server" ID="PlControlData">
+                <div class="auto-style7" runat="server" id="Panel">
 
-                            <br />
-
-                            <center>
-                                <asp:DataList runat="server" ID="ViewControlListTask" BorderColor="Black" BorderWidth="1px" CellPadding="1" CellSpacing="1" style="width: 100%">
-                                    <itemtemplate>
-                                        <div style="border: solid 1px black; margin: 4px; border-radius: 10px; padding: 5px;">
-                                            Name : <%# Eval("Fullname") %>
-                                            <br />
-                                            Stuts Task : <%# Eval("Status").ToString() == "1" ? "Been completed" : "Under implementation" %>
-                                            <br />
-                                            <a href="SearchPage?OD=<%# Eval("ID") %>">Click here to go to the details</a>
-                                        </div>
-                                    </itemtemplate>
-                                </asp:DataList>
-                            </center>
-
+                    <div style="background-color: darkslateblue; padding: 10px; border-end-start-radius: 20px; border-end-end-radius: 20px;">
+                        <input class="auto-style9" placeholder="Search for tasks" style="background-color: darkslateblue; color: white; border: solid 0px; border-block-end: solid 1px black; text-align: center;" id="txtSharch" runat="server" />
+                        <br />
+                        &nbsp;<div>
+                            <asp:Button runat="server" Text="Sharch" OnClick="Sharch" />
                         </div>
-                    </asp:Panel>
-                </ContentTemplate>
-            </asp:UpdatePanel>
+                    </div>
+
+                    <br />
+
+                    <center>
+                        <asp:DataList runat="server" ID="ViewControlListTask" BorderColor="Black" BorderWidth="1px" CellPadding="1" CellSpacing="1" style="width: 100%">
+                            <itemtemplate>
+                                <div style="border: solid 1px black; margin: 4px; border-radius: 10px; padding: 5px;">
+                                    Name : <%# Eval("Fullname") %>
+                                    <br />
+                                    Stuts Task : <%# Eval("Status").ToString() == "1" ? "Been completed" : "Under implementation" %>
+                                    <br />
+                                    <a href="SearchPage?OD=<%# Eval("ID") %>">Click here to go to the details</a>
+                                </div>
+                            </itemtemplate>
+                        </asp:DataList>
+                    </center>
+
+                </div>
+            </asp:Panel>
+
+
 
             <center>
                 <table runat="server" id="TabDelest">
@@ -97,7 +98,9 @@
                         <td colspan="2" class="auto-style7">
                             <asp:Label runat="server" Style="z-index: 1" Text="Title"></asp:Label>
                             <br />
-                            <input id="txtTitle" runat="server" type="text" style="width: 100%; height: 40px; font-size: medium" /></td>
+                            <input  maxlength="50" runat="server" id="txtTitle" class="txttitlestyle1" />
+
+                        </td>
                     </tr>
 
 
@@ -105,7 +108,7 @@
                         <td colspan="2" class="auto-style7">
                             <asp:Label runat="server" Style="z-index: 1" Text="Subject" ID="Label3"></asp:Label>
                             <br />
-                            <textarea id="txtSubject" runat="server" style="width: 100%; height: 40px; font-size: medium" ></textarea>
+                            <textarea id="txtSubject" runat="server" style="font-size: medium" class="auto-style10"></textarea>
                         </td>
                     </tr>
 
@@ -138,8 +141,21 @@
                             <asp:Button ID="btnSaveData" runat="server" Text="Save" Height="40px" Width="108px" OnClick="btnSaveData_Click" />
                         </td>
                     </tr>
+
+                    <tr>
+                        <td class="auto-style3" colspan="2">
+                            <asp:Label runat="server" ID="lblMsg" />
+                        </td>
+                    </tr>
+
+
+
                 </table>
             </center>
+
+
+
+
 
 
 

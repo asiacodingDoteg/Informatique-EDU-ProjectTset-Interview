@@ -27,8 +27,8 @@ namespace dboConnect
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<Task> Task { get; set; }
+        public virtual DbSet<Users> Users { get; set; }
     
         public virtual ObjectResult<CheckUser_Result> CheckUser(string username)
         {
@@ -37,6 +37,24 @@ namespace dboConnect
                 new ObjectParameter("Username", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CheckUser_Result>("CheckUser", usernameParameter);
+        }
+    
+        public virtual ObjectResult<string> sp_GetFullname(Nullable<int> userID)
+        {
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("sp_GetFullname", userIDParameter);
+        }
+    
+        public virtual ObjectResult<sp_GetUser_Result> sp_GetUser(Nullable<int> userID)
+        {
+            var userIDParameter = userID.HasValue ?
+                new ObjectParameter("UserID", userID) :
+                new ObjectParameter("UserID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_GetUser_Result>("sp_GetUser", userIDParameter);
         }
     
         public virtual ObjectResult<sp_LoginUser_Result> sp_LoginUser(string username, string password)
@@ -69,22 +87,29 @@ namespace dboConnect
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_SharchTask_Result>("sp_SharchTask", userIDParameter, typeParameter, keyroldParameter);
         }
     
-        public virtual ObjectResult<string> sp_GetFullname(Nullable<int> userID)
+        public virtual int sp_updateTask(Nullable<int> useriD, Nullable<int> taskID, string subjectTxt, Nullable<int> typeTask, string titleTask)
         {
-            var userIDParameter = userID.HasValue ?
-                new ObjectParameter("UserID", userID) :
-                new ObjectParameter("UserID", typeof(int));
+            var useriDParameter = useriD.HasValue ?
+                new ObjectParameter("useriD", useriD) :
+                new ObjectParameter("useriD", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("sp_GetFullname", userIDParameter);
-        }
+            var taskIDParameter = taskID.HasValue ?
+                new ObjectParameter("TaskID", taskID) :
+                new ObjectParameter("TaskID", typeof(int));
     
-        public virtual ObjectResult<sp_GetUser_Result> sp_GetUser(Nullable<int> userID)
-        {
-            var userIDParameter = userID.HasValue ?
-                new ObjectParameter("UserID", userID) :
-                new ObjectParameter("UserID", typeof(int));
+            var subjectTxtParameter = subjectTxt != null ?
+                new ObjectParameter("SubjectTxt", subjectTxt) :
+                new ObjectParameter("SubjectTxt", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_GetUser_Result>("sp_GetUser", userIDParameter);
+            var typeTaskParameter = typeTask.HasValue ?
+                new ObjectParameter("TypeTask", typeTask) :
+                new ObjectParameter("TypeTask", typeof(int));
+    
+            var titleTaskParameter = titleTask != null ?
+                new ObjectParameter("TitleTask", titleTask) :
+                new ObjectParameter("TitleTask", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_updateTask", useriDParameter, taskIDParameter, subjectTxtParameter, typeTaskParameter, titleTaskParameter);
         }
     }
 }

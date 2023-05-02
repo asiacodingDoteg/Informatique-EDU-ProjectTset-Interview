@@ -70,5 +70,6 @@
     <Build Include="dbo\Stored Procedures\sp_SharchTask.sql" />
     <Build Include="dbo\Stored Procedures\sp_GetFullname.sql" />
     <Build Include="dbo\Stored Procedures\sp_GetUser.sql" />
+    <Build Include="dbo\Stored Procedures\sp_updateTask.sql" />
   </ItemGroup>
 </Project>

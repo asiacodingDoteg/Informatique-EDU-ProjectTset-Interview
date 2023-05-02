@@ -76,11 +76,12 @@ namespace InformatiqueEDU_WebUILayer
                         TypeTask = 0,
                         TitleTask = txtTiteTask.Value,
                         FromUser = DataUser.id,
+                        SubjectTask = txtSubjectTask.Value, 
                     };
 
 
                     var subjectTask = txtSubjectTask.Value;
-                    var FileUpdae = updateFiles(upFileTask,DataUser.id, Convert.ToInt32(GetCurUsers1.SelectedItem.Value));
+                    var FileUpdae = updateFiles(upFileTask, DataUser.id, Convert.ToInt32(GetCurUsers1.SelectedItem.Value));
                     if (FileUpdae.Status)
                     {
                         task.FilePath = FileUpdae.AttachedObject.ToString();

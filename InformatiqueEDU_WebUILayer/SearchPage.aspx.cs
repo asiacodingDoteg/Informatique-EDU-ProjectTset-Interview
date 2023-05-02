@@ -34,16 +34,14 @@ namespace InformatiqueEDU_WebUILayer
                 //Opne details Page
                 if (this.Request["OD"] != null)
                 {
-                    GetDetails(this.Request["OD"].ToString(), DataUser.id);
+                    //init data
+                    GetDetails();
                 }
                 //Opne Sharch Page
                 else if (this.Request["Sharch"] != null)
                 {
                     SharchDB(this.Request["Sharch"].ToString());
                 }
-
-
-
             }
             else
             {
@@ -89,51 +87,42 @@ ON (Task.ToUser=Users.id and users.Fullname like '%'+@p0+'%') or (Task.ToUser=Us
 
 
 
-        private void GetDetails(string IDTask, int IDUser)
+        private void GetDetails()
         {
             try
             {
-                using (var Db = new dboConnect.InformatiqueEDU_TaskEntities())
+                using (var db = new dboConnect.InformatiqueEDU_TaskEntities())
                 {
-                    var GetTaskFromDB = Db.Task.SqlQuery($"select top 1 * from Task where id = @p0 and {(this.CurUser().UserType == 1 ? "FromUser" : "ToUser")} = @p1", IDTask, IDUser).ToList();
 
-                    if (GetTaskFromDB.Count >= 1)
+
+                    var _task = GetTaskFromDb();
+                    #region Insert Data
+                    var Subject = _task.SubjectTask;
+                    var Title = _task.TitleTask;
+                    var Status = _task.TypeTask;
+                    var FromUserID = db.sp_GetFullname(_task.FromUser).FirstOrDefault();
+                    var Data = _task.DateTime;
+                    var LinkFileinTask = _task.FilePath;
+                    #endregion
+
+                    lblDataTask.Text = "Last Update :" + Data?.ToString("yyyy/MM/dd HH:mm:ss");
+                    lblTameLaderName.Text = "TeamLader :" + FromUserID;
+                    txtTitle.Value = Title;
+                    txtSubject.Value = Subject;
+
+                    if (!string.IsNullOrEmpty(LinkFileinTask))
                     {
-                        var Subject = GetTaskFromDB[0].SubjectTask; // ok
-                        var Title = GetTaskFromDB[0].TitleTask; //  ok
-                        var Status = GetTaskFromDB[0].TypeTask;
-                        var FromUserID = Db.sp_GetFullname(GetTaskFromDB[0].FromUser).FirstOrDefault();
-                        var Data = GetTaskFromDB[0].DateTime;
-                        var LinkFileinTask = GetTaskFromDB[0].FilePath;
-                        lblDataTask.Text = "Last Update :" + Data?.ToString("yyyy/MM/dd HH:mm:ss");
-                        lblTameLaderName.Text = "TeamLader :" + FromUserID;
-                        txtTitle.Value = Title;
-                        txtSubject.Value = Subject;
-
-                        if (!string.IsNullOrEmpty(LinkFileinTask))
-                        {
-                            Session["DwonloadLinkApp1"] = LinkFileinTask;
-
-
-                        }
-                        btnDownlaodData.Visible = !string.IsNullOrEmpty(LinkFileinTask);
-
-
-
-                        //Cur Select Stauts 
-                        rblStautsTask.Items[Status].Selected = true;
-
-                        ShowView(TabDelest);
-
-
+                        Session["DwonloadLinkApp1"] = LinkFileinTask;
                     }
 
-                    else
-                    {
-                        //!!
-                        this.ErorrPage("This task was not found");
-                    }
+                    btnDownlaodData.Visible = !string.IsNullOrEmpty(LinkFileinTask);
+
+                    //Cur Select Stauts 
+                    rblStautsTask.Items[Status].Selected = true;
+
+                    ShowView(TabDelest);
                 }
+
             }
             catch (Exception ex)
             {
@@ -146,7 +135,7 @@ ON (Task.ToUser=Users.id and users.Fullname like '%'+@p0+'%') or (Task.ToUser=Us
         {
             if (!string.IsNullOrEmpty(txtSharch.Value))
             {
-                Response.Redirect("SearchPage?Sharch=" + txtSharch.Value);
+                Response.Redirect("SearchPage?Sharch=" + txtSharch.Value, false);
             }
             else
             {
@@ -157,7 +146,7 @@ ON (Task.ToUser=Users.id and users.Fullname like '%'+@p0+'%') or (Task.ToUser=Us
         protected void ShowView(Control Target)
         {
             PlControlData.Visible = false;
-            TabDelest.Visible = false;
+            TabDelest.Visible = false; 
 
             if (Target != null)
                 Target.Visible = true;
@@ -166,11 +155,23 @@ ON (Task.ToUser=Users.id and users.Fullname like '%'+@p0+'%') or (Task.ToUser=Us
 
         protected void btnSaveData_Click(object sender, EventArgs e)
         {
-            // txtTitle.Value = Title;
-            // txtSubject.Value = Subject;
-            //
-            // //Cur Select Stauts 
-            // rblStautsTask.Items[Status].Selected = true;
+            try
+            {
+                using (var db = new dboConnect.InformatiqueEDU_TaskEntities())
+                {
+                    var _task = GetTaskFromDb();
+                    string sutask = txtSubject.Value;
+                    int Status = rblStautsTask.SelectedIndex;
+                    string Title = txtTitle.Value;
+                    db.sp_updateTask(this.CurUser().id, _task.id,sutask , Status , Title);
+                    lblMsg.Text = "The modification has been completed successfully";
+                    GetDetails(); //RefData
+                }
+            }
+            catch (Exception ex)
+            {
+                this.ErorrPage(ex.Message);
+            }
         }
 
         protected void btnDownlaodData_Click(object sender, EventArgs e)
@@ -178,18 +179,32 @@ ON (Task.ToUser=Users.id and users.Fullname like '%'+@p0+'%') or (Task.ToUser=Us
             if (Session["DwonloadLinkApp1"] != null)
             {
                 var Link = Session["DwonloadLinkApp1"].ToString().Split('\\');
-                //C:\inetpub\wwwroot\interviewTask\File\TaskFiles\1\3\bg1.jpg
-
-                string GetKey = Link[Link.Length - 1];
-                string GetKey1 = Link[Link.Length - 2];
-                string GetKey2 = Link[Link.Length - 3];
-                string GetKey4 = Link[Link.Length - 4];
-                string GetKey5 = Link[Link.Length - 4];
-
-                ///                this.Response.Redirect($"./File/TaskFiles/{Link[Link.Length-}/{Link}/{Link}",true);
+                //                        \File\TaskFiles         \1                 \3                   \bg1.jpg
+                this.Response.Redirect($"./File/TaskFiles/{Link[Link.Length - 3]}/{Link[Link.Length - 2]}/{Link[Link.Length - 1]}", true);
             }
         }
 
+        private dboConnect.Task GetTaskFromDb()
+        {
+            using (var Db = new dboConnect.InformatiqueEDU_TaskEntities())
+            {
+                var GetTaskFromDB = Db.Task.SqlQuery($"select top 1 * from Task where id = @p0 and {(this.CurUser().UserType == 1 ? "FromUser" : "ToUser")} = @p1", this.Request["OD"].ToString(), this.CurUser().id).ToList();
 
+                if (GetTaskFromDB.Count >= 1)
+                {
+                    return GetTaskFromDB[0];
+                }
+                else
+                {
+                    this.ErorrPage("This task was not found");
+                    return null;
+                }
+            }
+        }
+
+        protected void txtTitle1_TextChanged(object sender, EventArgs e)
+        {
+            string X = ((TextBox)sender).Text;
+        }
     }
 }

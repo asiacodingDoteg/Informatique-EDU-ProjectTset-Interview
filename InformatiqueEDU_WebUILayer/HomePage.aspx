@@ -138,11 +138,14 @@
                         Response.Write("<li style='padding: 10px;'><a href='TaskPage.aspx'>Add Task</a></li>");
                     }
                 %>
-                
+
 
                 <li style="padding: 10px;"><a href="SearchPage.aspx">Task</a></li>
 
 
+                <li style="float: right; color: white; padding: 10px">
+                    <p runat="server" id="Logout">User</p>
+                </li>
                 <li style="float: right; color: white; padding: 10px">
                     <p runat="server" id="LoginUsers">User</p>
                 </li>

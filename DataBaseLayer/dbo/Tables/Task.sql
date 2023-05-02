@@ -6,6 +6,6 @@
 	[DateTime] [datetime] NULL,
 	[TitleTask] [nvarchar](50) NULL,
 	[FromUser] [int] NULL,
-	[SubjectTask] [nchar](500) NULL,
+	[SubjectTask] [nvarchar](500) NULL,
     CONSTRAINT [PK_Task] PRIMARY KEY CLUSTERED ([id] ASC)
 );

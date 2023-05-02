@@ -16,7 +16,7 @@
           <Property Name="DateTime" Type="datetime" />
           <Property Name="TitleTask" Type="nvarchar" MaxLength="50" />
           <Property Name="FromUser" Type="int" />
-          <Property Name="SubjectTask" Type="nchar" MaxLength="500" />
+          <Property Name="SubjectTask" Type="nvarchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -49,6 +49,13 @@
           <Parameter Name="Type" Type="int" Mode="In" />
           <Parameter Name="Keyrold" Type="nvarchar" Mode="In" />
         </Function>
+        <Function Name="sp_updateTask" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="useriD" Type="int" Mode="In" />
+          <Parameter Name="TaskID" Type="int" Mode="In" />
+          <Parameter Name="SubjectTxt" Type="nvarchar" Mode="In" />
+          <Parameter Name="TypeTask" Type="int" Mode="In" />
+          <Parameter Name="TitleTask" Type="nvarchar" Mode="In" />
+        </Function>
         <EntityContainer Name="InformatiqueEDU_TaskModelStoreContainer">
           <EntitySet Name="Task" EntityType="Self.Task" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
@@ -58,27 +65,47 @@
     <edmx:ConceptualModels>
       <Schema Namespace="InformatiqueEDU_TaskModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="InformatiqueEDU_TaskEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Task" EntityType="InformatiqueEDU_TaskModel.Task" />
           <EntitySet Name="Users" EntityType="InformatiqueEDU_TaskModel.Users" />
           <FunctionImport Name="CheckUser" ReturnType="Collection(InformatiqueEDU_TaskModel.CheckUser_Result)">
-          <Parameter Name="Username" Mode="In" Type="String" />
+            <Parameter Name="Username" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetFullname" ReturnType="Collection(String)">
+            <Parameter Name="UserID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_GetUser" ReturnType="Collection(InformatiqueEDU_TaskModel.sp_GetUser_Result)">
+            <Parameter Name="UserID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="sp_LoginUser" ReturnType="Collection(InformatiqueEDU_TaskModel.sp_LoginUser_Result)">
             <Parameter Name="Username" Mode="In" Type="String" />
             <Parameter Name="Password" Mode="In" Type="String" />
           </FunctionImport>
-          <EntitySet Name="Task" EntityType="InformatiqueEDU_TaskModel.Task" />
           <FunctionImport Name="sp_SharchTask" ReturnType="Collection(InformatiqueEDU_TaskModel.sp_SharchTask_Result)">
             <Parameter Name="UserID" Mode="In" Type="Int32" />
             <Parameter Name="Type" Mode="In" Type="Int32" />
             <Parameter Name="Keyrold" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="sp_GetFullname" ReturnType="Collection(String)">
-          <Parameter Name="UserID" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="sp_GetUser" ReturnType="Collection(InformatiqueEDU_TaskModel.sp_GetUser_Result)">
-            <Parameter Name="UserID" Mode="In" Type="Int32" />
+          <FunctionImport Name="sp_updateTask">
+            <Parameter Name="useriD" Mode="In" Type="Int32" />
+            <Parameter Name="TaskID" Mode="In" Type="Int32" />
+            <Parameter Name="SubjectTxt" Mode="In" Type="String" />
+            <Parameter Name="TypeTask" Mode="In" Type="Int32" />
+            <Parameter Name="TitleTask" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
+        <EntityType Name="Task">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ToUser" Type="Int32" Nullable="false" />
+          <Property Name="TypeTask" Type="Int32" Nullable="false" />
+          <Property Name="FilePath" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="DateTime" Type="DateTime" Precision="3" />
+          <Property Name="TitleTask" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FromUser" Type="Int32" />
+          <Property Name="SubjectTask" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+        </EntityType>
         <EntityType Name="Users">
           <Key>
             <PropertyRef Name="id" />
@@ -96,34 +123,6 @@
           <Property Type="Int32" Name="LastID" Nullable="false" />
           <Property Type="String" Name="cases" Nullable="true" MaxLength="66" />
         </ComplexType>
-        <ComplexType Name="sp_LoginUser_Result">
-          <Property Type="Int32" Name="id" Nullable="false" />
-          <Property Type="String" Name="Username" Nullable="false" MaxLength="50" />
-          <Property Type="String" Name="Fullname" Nullable="false" MaxLength="50" />
-          <Property Type="String" Name="Password" Nullable="false" MaxLength="50" />
-          <Property Type="Int32" Name="UserType" Nullable="false" />
-          <Property Type="Boolean" Name="IsEnabled" Nullable="false" />
-          <Property Type="Int32" Name="TeamLeader" Nullable="false" />
-          <Property Type="DateTime" Name="date" Nullable="false" Precision="23" />
-        </ComplexType>
-        <EntityType Name="Task">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ToUser" Type="Int32" Nullable="false" />
-          <Property Name="TypeTask" Type="Int32" Nullable="false" />
-          <Property Name="FilePath" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="DateTime" Type="DateTime" Precision="3" />
-          <Property Name="TitleTask" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="FromUser" Type="Int32" />
-          <Property Name="SubjectTask" Type="String" MaxLength="500" FixedLength="true" Unicode="true" />
-        </EntityType>
-        <ComplexType Name="sp_SharchTask_Result">
-          <Property Type="String" Name="Fullname" Nullable="false" MaxLength="50" />
-          <Property Type="String" Name="Status" Nullable="true" MaxLength="50" />
-          <Property Type="String" Name="ID" Nullable="true" MaxLength="50" />
-        </ComplexType>
         <ComplexType Name="sp_GetUser_Result">
           <Property Type="Int32" Name="id" Nullable="false" />
           <Property Type="String" Name="Username" Nullable="false" MaxLength="50" />
@@ -134,12 +133,41 @@
           <Property Type="Int32" Name="TeamLeader" Nullable="false" />
           <Property Type="DateTime" Name="date" Nullable="false" Precision="23" />
         </ComplexType>
+        <ComplexType Name="sp_LoginUser_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="Username" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Fullname" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="UserType" Nullable="false" />
+          <Property Type="Boolean" Name="IsEnabled" Nullable="false" />
+          <Property Type="Int32" Name="TeamLeader" Nullable="false" />
+          <Property Type="DateTime" Name="date" Nullable="false" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="sp_SharchTask_Result">
+          <Property Type="String" Name="Fullname" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Status" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="ID" Nullable="true" MaxLength="50" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="InformatiqueEDU_TaskModelStoreContainer" CdmEntityContainer="InformatiqueEDU_TaskEntities">
+          <EntitySetMapping Name="Task">
+            <EntityTypeMapping TypeName="InformatiqueEDU_TaskModel.Task">
+              <MappingFragment StoreEntitySet="Task">
+                <ScalarProperty Name="SubjectTask" ColumnName="SubjectTask" />
+                <ScalarProperty Name="FromUser" ColumnName="FromUser" />
+                <ScalarProperty Name="TitleTask" ColumnName="TitleTask" />
+                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
+                <ScalarProperty Name="TypeTask" ColumnName="TypeTask" />
+                <ScalarProperty Name="ToUser" ColumnName="ToUser" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="InformatiqueEDU_TaskModel.Users">
               <MappingFragment StoreEntitySet="Users">
@@ -162,43 +190,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="sp_LoginUser" FunctionName="InformatiqueEDU_TaskModel.Store.sp_LoginUser">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="InformatiqueEDU_TaskModel.sp_LoginUser_Result">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-                <ScalarProperty Name="Fullname" ColumnName="Fullname" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="UserType" ColumnName="UserType" />
-                <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
-                <ScalarProperty Name="TeamLeader" ColumnName="TeamLeader" />
-                <ScalarProperty Name="date" ColumnName="date" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <EntitySetMapping Name="Task">
-            <EntityTypeMapping TypeName="InformatiqueEDU_TaskModel.Task">
-              <MappingFragment StoreEntitySet="Task">
-                <ScalarProperty Name="SubjectTask" ColumnName="SubjectTask" />
-                <ScalarProperty Name="FromUser" ColumnName="FromUser" />
-                <ScalarProperty Name="TitleTask" ColumnName="TitleTask" />
-                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
-                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
-                <ScalarProperty Name="TypeTask" ColumnName="TypeTask" />
-                <ScalarProperty Name="ToUser" ColumnName="ToUser" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="sp_SharchTask" FunctionName="InformatiqueEDU_TaskModel.Store.sp_SharchTask">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="InformatiqueEDU_TaskModel.sp_SharchTask_Result">
-                <ScalarProperty Name="Fullname" ColumnName="Fullname" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="sp_GetFullname" FunctionName="InformatiqueEDU_TaskModel.Store.sp_GetFullname" />
           <FunctionImportMapping FunctionImportName="sp_GetUser" FunctionName="InformatiqueEDU_TaskModel.Store.sp_GetUser">
             <ResultMapping>
@@ -214,6 +205,30 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_LoginUser" FunctionName="InformatiqueEDU_TaskModel.Store.sp_LoginUser">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="InformatiqueEDU_TaskModel.sp_LoginUser_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="Fullname" ColumnName="Fullname" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="UserType" ColumnName="UserType" />
+                <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
+                <ScalarProperty Name="TeamLeader" ColumnName="TeamLeader" />
+                <ScalarProperty Name="date" ColumnName="date" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_SharchTask" FunctionName="InformatiqueEDU_TaskModel.Store.sp_SharchTask">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="InformatiqueEDU_TaskModel.sp_SharchTask_Result">
+                <ScalarProperty Name="Fullname" ColumnName="Fullname" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_updateTask" FunctionName="InformatiqueEDU_TaskModel.Store.sp_updateTask" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
